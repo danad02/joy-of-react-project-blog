@@ -22,6 +22,7 @@ function DivisionGroupsDemo({
   const numOfItemsPerGroup = Math.floor(numOfItems / numOfGroups);
 
   const remainder = includeRemainderArea ? numOfItems % numOfGroups : null;
+  const remainderStart = numOfItems - remainder;
 
   // When we're splitting into 1-3 groups, display side-by-side
   // columns. When we get to 4, it should switch to a 2x2 grid.
@@ -52,20 +53,24 @@ function DivisionGroupsDemo({
 
         <div className={styles.demoWrapper}>
           <div className={clsx(styles.demoArea)} style={gridStructure}>
-            {range(numOfGroups).map((groupIndex) => (
-              <div key={groupIndex} className={styles.group}>
-                {range(numOfItemsPerGroup).map((index) => {
-                  const layoutId = `${id}-${groupIndex}-${index}`;
-                  return (
-                    <motion.div
-                      layoutId={layoutId}
-                      key={layoutId}
-                      className={styles.item}
-                    />
-                  );
-                })}
-              </div>
-            ))}
+            {range(numOfGroups).map((groupIndex) => {
+              const end = numOfItemsPerGroup * (groupIndex + 1);
+              const start = end - numOfItemsPerGroup;
+              return (
+                <div key={groupIndex} className={styles.group}>
+                  {range(start, end).map((index) => {
+                    const layoutId = `${id}-${index}`;
+                    return (
+                      <motion.div
+                        layoutId={layoutId}
+                        key={layoutId}
+                        className={styles.item}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -73,8 +78,16 @@ function DivisionGroupsDemo({
           <div className={styles.remainderArea}>
             <p className={styles.remainderHeading}>Remainder Area</p>
 
-            {range(remainder).map((index) => {
-              return <div key={index} className={styles.item} />;
+            {range(remainderStart, numOfItems).map((index) => {
+              const reverseIndex = numOfItems - index + remainderStart - 1;
+              const layoutId = `${id}-${reverseIndex}`;
+              return (
+                <motion.div
+                  layoutId={layoutId}
+                  key={layoutId}
+                  className={styles.item}
+                />
+              );
             })}
           </div>
         )}
